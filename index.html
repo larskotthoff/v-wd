@@ -96,6 +96,17 @@ circle {
                 .attr("height", height)
                 .attr("width", width);
 
+        function fishEye(h) {
+            return function(a, b) {
+                console.log(a, h, b);
+                var sc = d3.scale.pow().exponent(2)
+                    .domain([0, (h-a)/(b-a), 1]).range([-0.5, 0, 0.5]);
+                return function(t) {
+                    return a + (b - a) * (0.5 + sc(t));
+                };
+            };
+        }
+
         d3.json("debt.json", function(json) {
             var dmax = d3.max($.map(json, function(d) {
                     return d3.max(d.d);
@@ -128,6 +139,18 @@ circle {
                 };
             }
 
+            svg.on("click", function() {
+                    var offsety = d3.event.y-window.innerHeight*0.1;
+                    if(offsety >= 10 && offsety <= height - margin) {
+                        y.interpolate(fishEye(offsety));
+                        redraw();
+                    }
+                });
+
+            function redraw() {
+                svg.selectAll("g.yaxis").call(ylabels);
+            }
+
             svg.selectAll("g")
                 .data(json).enter().append("svg:g")
                 .each(mkMkLines(null));
@@ -158,6 +181,7 @@ circle {
                 .attr("text-anchor", "end")
                 .text("year");
             svg.append("svg:g")
+                .classed("yaxis", true)
                 .attr("transform", "translate(" + (margin - 5) + ",0)")
                 .call(ylabels);
             svg.append("svg:text")
