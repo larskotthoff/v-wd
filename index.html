@@ -6,36 +6,7 @@
         <script type="text/javascript" src="../d3.min.js"></script>
         <script type="text/javascript" src="../d3.layout.min.js"></script>
         <script type="text/javascript" src="../jquery-1.6.2.min.js"></script>
-        <script type="text/javascript" src="../jquery.tipsy.js"></script>
         <style type="text/css"> 
-.tipsy {
-  padding: 5px;
-  font-weight: bold;
-  font-size: 12px;
-  font-family: "URW Gothic L", sans;
-  position: absolute;
-  z-index: 100000;
-}
-
-.tipsy-inner {
-  padding: 5px 8px 4px 8px;
-  background-color: #ceee5c;
-  color: #222;
-  max-width: 200px;
-  text-align: center;
-  border-radius: 3px;
-  -moz-border-radius:3px;
-  -webkit-border-radius:3px;
-}
-
-.tipsy-arrow {
-  position: absolute;
-  width: 9px;
-  height: 5px;
-}
-
-.tipsy-s .tipsy-arrow { bottom: 0; }
-
 body {
     font: 12px Verdana, Palatino, Helvetica, sans;
 }
@@ -45,7 +16,7 @@ h1 {
     margin: 0 0 0.3em;
 }
 path {
-    stroke: #888;
+    stroke: #aaa;
     stroke-width: 2;
     fill: none;
 }
@@ -54,10 +25,6 @@ path.overlay {
 }
 path.overlay:hover {
     stroke: #000;
-}
-circle {
-    fill: #888;
-    stroke: #888;
 }
 .tick {
   stroke: #000;
@@ -111,9 +78,9 @@ circle {
                     return d3.max(d.d);
                 })),
                 x = d3.scale.linear().domain([1990, 2011])
-                    .range([margin, width - 10]),
+                    .range([margin, width - 30]),
                 y = d3.scale.linear().domain([0, dmax]).nice()
-                    .range([height - margin, 10]),
+                    .range([height - margin, 15]),
                 xlabels = d3.svg.axis().scale(x).orient("bottom")
                     .tickSubdivide(1).tickFormat(d3.format("0000")),
                 ylabels = d3.svg.axis().scale(y).orient("left");
@@ -148,6 +115,10 @@ circle {
                 svg.selectAll("path.line").attr("d", mkPath);
             }
 
+            function mkKey(s) {
+                return s.substr(0, 3).replace(" ", "_").replace(".", "_");
+            }
+
             svg.selectAll("path")
                 .data(json).enter().append("svg:path")
                 .attr("class", "line")
@@ -156,10 +127,48 @@ circle {
                 .data(json).enter().append("svg:path")
                 .attr("class", "overlay line")
                 .attr("d", mkPath)
-                .append("original-title").text(function(d) {
-                        $(this).parent().tipsy({gravity:'s'});
-                        return d.n;
-                    });
+                .on("mouseover", function(d, i) {
+                    var cn = mkKey(d.n);
+                    svg.selectAll("text." + cn + "b").data(d.d)
+                        .enter().append("svg:text")
+                        .attr("class", cn + "b")
+                        .attr("stroke", "#fff")
+                        .attr("stroke-width", 4)
+                        .attr("transform", function(e, j) {
+                            return "translate(" + x(years[j]) + "," +
+                                (y(e) - 10) + ")";
+                            })
+                        .attr("text-anchor", "middle")
+                        .text(function(e) { return e == -1 ? null : e; });
+                    svg.append("svg:text")
+                        .attr("class", cn + "b")
+                        .attr("stroke", "#fff")
+                        .attr("stroke-width", 4)
+                        .attr("transform", "translate(" + width/2 + "," +
+                            (y(d3.max(d.d)) - 30) + ")")
+                        .attr("text-anchor", "middle")
+                        .text(d.n)
+                    svg.selectAll("text." + cn + "f").data(d.d)
+                        .enter().append("svg:text")
+                        .attr("class", cn + "f")
+                        .attr("transform", function(e, j) {
+                            return "translate(" + x(years[j]) + "," +
+                                (y(e) - 10) + ")";
+                            })
+                        .attr("text-anchor", "middle")
+                        .text(function(e) { return e == -1 ? null : e; });
+                    svg.append("svg:text")
+                        .attr("class", cn + "f")
+                        .attr("transform", "translate(" + width/2 + "," +
+                            (y(d3.max(d.d)) - 30) + ")")
+                        .attr("text-anchor", "middle")
+                        .text(d.n)
+                })
+                .on("mouseout", function(d, i) {
+                    var cn = mkKey(d.n);
+                    svg.selectAll("text." + cn + "f").remove();
+                    svg.selectAll("text." + cn + "b").remove();
+                });
 
             svg.append("svg:g")
                 .attr("transform", "translate(0," + (height - margin + 5) + ")")
