@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>World debt</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <script type="text/javascript" src="../d3.min.js"></script>
+        <script type="text/javascript" src="../d3.layout.min.js"></script>
+        <script type="text/javascript" src="../jquery-1.6.2.min.js"></script>
+        <script type="text/javascript" src="../jquery.tipsy.js"></script>
+        <style type="text/css"> 
+.tipsy {
+  padding: 5px;
+  font-weight: bold;
+  font-size: 12px;
+  font-family: "URW Gothic L", sans;
+  position: absolute;
+  z-index: 100000;
+}
+
+.tipsy-inner {
+  padding: 5px 8px 4px 8px;
+  background-color: #ceee5c;
+  color: #222;
+  max-width: 200px;
+  text-align: center;
+  border-radius: 3px;
+  -moz-border-radius:3px;
+  -webkit-border-radius:3px;
+}
+
+.tipsy-arrow {
+  position: absolute;
+  width: 9px;
+  height: 5px;
+}
+
+.tipsy-s .tipsy-arrow { bottom: 0; }
+
+body {
+    font: 12px Verdana, Palatino, Helvetica, sans;
+}
+h1 {
+    font-weight: normal;
+    font-size: 4em;
+    margin: 0 0 0.3em;
+}
+line {
+    stroke: #888;
+    stroke-width: 2;
+    fill: none;
+}
+g.overlay > line {
+    stroke: transparent;
+}
+g.active > line {
+    stroke: #000;
+}
+circle {
+    fill: #888;
+    stroke: #888;
+}
+.tick {
+  stroke: #000;
+  stroke-width: 1;
+}
+.domain {
+  fill: none;
+  stroke: #000;
+}
+.axistitle {
+    font-weight: bold;
+}
+        </style>
+    </head>
+
+    <body>
+        <div style="position: fixed; top: 10px; left: 10px">
+            <h1>World debt</h1>
+        </div>
+        <div id="graph" style="position: fixed; top: 10%;"></div>
+        <div style="position: fixed; bottom: 10px; left: 10px">
+            Data courtesy of the
+            <a href="http://www.imf.org/">International Monetary Fund</a>.
+        </div>
+        <div style="position: fixed; bottom: 10px; right: 10px">
+            Lars Kotthoff 2011
+        </div>
+        <script type="text/javascript">
+        (function () {
+        var margin = 50,
+            years = [1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011],
+            width = window.innerWidth - 30,
+            height = window.innerHeight*0.8,
+            svg = d3.select("#graph")
+                .append("svg:svg")
+                .attr("height", height)
+                .attr("width", width);
+
+        d3.json("debt.json", function(json) {
+            var dmax = d3.max($.map(json, function(d) {
+                    return d3.max(d.d);
+                })),
+                x = d3.scale.linear().domain([1990, 2011])
+                    .range([margin, width - 10]),
+                y = d3.scale.linear().domain([0, dmax]).nice()
+                    .range([height - margin, 10]),
+                xlabels = d3.svg.axis().scale(x).orient("bottom")
+                    .tickSubdivide(1).tickFormat(d3.format("0000")),
+                ylabels = d3.svg.axis().scale(y).orient("left");
+
+            function mkMkLines(c) {
+                return function mkLines(d) {
+                    var prev = null,
+                        t = d3.select(this);
+                    $.each(d.d, function(i, s) {
+                        if(prev) {
+                            var e = t.append("svg:line")
+                                .attr("x1", x(years[i-1]))
+                                .attr("x2", x(years[i]))
+                                .attr("y1", y(prev))
+                                .attr("y2", y(s))
+                                .attr("stroke-dasharray", years[i-1] >= d.e ?
+                                    "5 5" : "1 0");
+                            if(c) { e.call(c); }
+                        }
+                        prev = s == -1 ? null : s;
+                    });
+                };
+            }
+
+            svg.selectAll("g")
+                .data(json).enter().append("svg:g")
+                .each(mkMkLines(null));
+            svg.selectAll("g.overlay")
+                .data(json).enter().append("svg:g")
+                .attr("class", "overlay")
+                .each(mkMkLines(function() {
+                    this.on("mouseover", function() {
+                            //d3.selectAll($(this).parent())
+                            //    .classed("active", true);
+                        })
+                        .on("mouseout", function() {
+                            //d3.selectAll($(this).parent())
+                            //    .classed("active", false);
+                        })
+                        .append("original-title").text(function(d) {
+                            $(this).parent().tipsy({gravity:'s'});
+                            return d.n;
+                        });
+                }));
+            svg.append("svg:g")
+                .attr("transform", "translate(0," + (height - margin + 5) + ")")
+                .call(xlabels);
+            svg.append("svg:text")
+                .classed("axistitle", true)
+                .attr("transform", "translate(" + width + "," +
+                    (height - 10) + ")")
+                .attr("text-anchor", "end")
+                .text("year");
+            svg.append("svg:g")
+                .attr("transform", "translate(" + (margin - 5) + ",0)")
+                .call(ylabels);
+            svg.append("svg:text")
+                .classed("axistitle", true)
+                .attr("transform", "translate(" + (margin + 5) + ",15)")
+                .attr("text-anchor", "start")
+                .text("debt [% GDP]");
+        });
+        })();
+        </script>
+    </body>
+</html>
