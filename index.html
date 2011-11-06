@@ -128,46 +128,39 @@ path.overlay:hover {
                 .attr("class", "overlay line")
                 .attr("d", mkPath)
                 .on("mouseover", function(d, i) {
-                    var cn = mkKey(d.n);
-                    svg.selectAll("text." + cn + "b").data(d.d)
-                        .enter().append("svg:text")
-                        .attr("class", cn + "b")
+                    var cn = mkKey(d.n),
+                        valg = svg.selectAll("g." + cn).data(d.d)
+                            .enter().append("svg:g")
+                            .attr("transform", function(e, j) {
+                                return "translate(" + x(years[j]) + "," +
+                                    (y(e) - 10) + ")";
+                                })
+                            .attr("class", cn),
+                        labg = svg.append("svg:g")
+                            .attr("transform", "translate(" + width/2 + "," +
+                                (y(d3.max(d.d)) - 30) + ")")
+                            .attr("class", cn);
+                    valg.append("svg:text")
                         .attr("stroke", "#fff")
                         .attr("stroke-width", 4)
-                        .attr("transform", function(e, j) {
-                            return "translate(" + x(years[j]) + "," +
-                                (y(e) - 10) + ")";
-                            })
                         .attr("text-anchor", "middle")
                         .text(function(e) { return e == -1 ? null : e; });
-                    svg.append("svg:text")
-                        .attr("class", cn + "b")
+                    valg.append("svg:text")
+                        .attr("text-anchor", "middle")
+                        .text(function(e) { return e == -1 ? null : e; });
+
+                    labg.append("svg:text")
                         .attr("stroke", "#fff")
                         .attr("stroke-width", 4)
-                        .attr("transform", "translate(" + width/2 + "," +
-                            (y(d3.max(d.d)) - 30) + ")")
                         .attr("text-anchor", "middle")
                         .text(d.n)
-                    svg.selectAll("text." + cn + "f").data(d.d)
-                        .enter().append("svg:text")
-                        .attr("class", cn + "f")
-                        .attr("transform", function(e, j) {
-                            return "translate(" + x(years[j]) + "," +
-                                (y(e) - 10) + ")";
-                            })
+                    labg.append("svg:text")
                         .attr("text-anchor", "middle")
-                        .text(function(e) { return e == -1 ? null : e; });
-                    svg.append("svg:text")
-                        .attr("class", cn + "f")
-                        .attr("transform", "translate(" + width/2 + "," +
-                            (y(d3.max(d.d)) - 30) + ")")
-                        .attr("text-anchor", "middle")
-                        .text(d.n)
+                        .text(d.n);
                 })
                 .on("mouseout", function(d, i) {
                     var cn = mkKey(d.n);
-                    svg.selectAll("text." + cn + "f").remove();
-                    svg.selectAll("text." + cn + "b").remove();
+                    svg.selectAll("g." + cn).remove();
                 });
 
             svg.append("svg:g")
