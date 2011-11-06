@@ -87,7 +87,7 @@ path.overlay:hover {
                 y = d3.scale.linear().domain([0, dmax]).nice()
                     .range([height - margin, 15]),
                 xlabels = d3.svg.axis().scale(x).orient("bottom")
-                    .tickSubdivide(1).tickFormat(d3.format("0000")),
+                    .tickFormat(d3.format("0000")).ticks(years.length),
                 ylabels = d3.svg.axis().scale(y).orient("left").ticks(20);
 
             function mkPath(d) {
