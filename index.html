@@ -14,12 +14,13 @@ body {
 h1 {
     font-weight: normal;
     font-size: 4em;
-    margin: 0 0 0.1em;
+    margin: 0 0 0;
 }
 path {
     stroke: #bf8330;
     stroke-width: 2;
     fill: none;
+    stroke-linecap: round;
 }
 path.overlay {
     stroke: transparent;
@@ -87,7 +88,7 @@ path.overlay:hover {
                     .range([height - margin, 15]),
                 xlabels = d3.svg.axis().scale(x).orient("bottom")
                     .tickSubdivide(1).tickFormat(d3.format("0000")),
-                ylabels = d3.svg.axis().scale(y).orient("left");
+                ylabels = d3.svg.axis().scale(y).orient("left").ticks(20);
 
             function mkPath(d) {
                 var prev = -1,
