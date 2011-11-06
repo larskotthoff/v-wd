@@ -136,9 +136,15 @@ path.overlay:hover {
                                     (y(e) - 10) + ")";
                                 })
                             .attr("class", cn),
+                        nonullxs = $.map(d.d, function(e, j) {
+                                    return e == -1 ? null : j;
+                                }),
+                        xindex = Math.round(nonullxs.length/2),
+                        labx = x(years[nonullxs[xindex]]),
+                        laby = y(d.d[nonullxs[xindex]]),
                         labg = svg.append("svg:g")
-                            .attr("transform", "translate(" + width/2 + "," +
-                                (y(d3.max(d.d)) - 30) + ")")
+                            .attr("transform", "translate(" + labx + "," +
+                                (laby - 50) + ")")
                             .attr("class", cn);
                     valg.append("svg:text")
                         .attr("stroke", "#fff")
@@ -150,11 +156,13 @@ path.overlay:hover {
                         .text(function(e) { return e == -1 ? null : e; });
 
                     labg.append("svg:text")
+                        .attr("class", "axistitle")
                         .attr("stroke", "#fff")
                         .attr("stroke-width", 4)
                         .attr("text-anchor", "middle")
                         .text(d.n)
                     labg.append("svg:text")
+                        .attr("class", "axistitle")
                         .attr("text-anchor", "middle")
                         .text(d.n);
                 })
