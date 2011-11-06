@@ -13,7 +13,7 @@ body {
 h1 {
     font-weight: normal;
     font-size: 4em;
-    margin: 0 0 0.3em;
+    margin: 0 0 0.1em;
 }
 path {
     stroke: #aaa;
@@ -43,8 +43,10 @@ path.overlay:hover {
     <body>
         <div style="position: fixed; top: 10px; left: 10px">
             <h1>World debt</h1>
+            Move mouse over graph to show details. Click to change scale, double
+            click to reset. Dashed lines show estimates.
         </div>
-        <div id="graph" style="position: fixed; top: 10%;"></div>
+        <div id="graph" style="position: fixed; top: 15%;"></div>
         <div style="position: fixed; bottom: 10px; left: 10px">
             Data courtesy of the
             <a href="http://www.imf.org/">International Monetary Fund</a>.
@@ -110,7 +112,7 @@ path.overlay:hover {
             }
 
             svg.on("click", function() {
-                    var offsety = d3.event.y-window.innerHeight*0.1;
+                    var offsety = d3.event.y-window.innerHeight*0.15;
                     if(offsety >= 10 && offsety <= height - margin) {
                         y.interpolate(fishEye(offsety));
                         redraw();
