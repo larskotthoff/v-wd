@@ -9,6 +9,7 @@
         <style type="text/css"> 
 body {
     font: 12px Verdana, Palatino, Helvetica, sans;
+    background: #ffdd73;
 }
 h1 {
     font-weight: normal;
@@ -16,7 +17,7 @@ h1 {
     margin: 0 0 0.1em;
 }
 path {
-    stroke: #aaa;
+    stroke: #bf8330;
     stroke-width: 2;
     fill: none;
 }
@@ -25,6 +26,7 @@ path.overlay {
 }
 path.overlay:hover {
     stroke: #000;
+    stroke-width: 2.5;
 }
 .tick {
   stroke: #000;
@@ -34,7 +36,7 @@ path.overlay:hover {
   fill: none;
   stroke: #000;
 }
-.axistitle {
+.title {
     font-weight: bold;
 }
         </style>
@@ -160,7 +162,7 @@ path.overlay:hover {
                                 (laby - 50) + ")")
                             .attr("class", cn);
                     valg.append("svg:text")
-                        .attr("stroke", "#fff")
+                        .attr("stroke", "#ffdd73")
                         .attr("stroke-width", 4)
                         .attr("text-anchor", "middle")
                         .text(function(e) { return e == -1 ? null : e; });
@@ -169,13 +171,13 @@ path.overlay:hover {
                         .text(function(e) { return e == -1 ? null : e; });
 
                     labg.append("svg:text")
-                        .attr("class", "axistitle")
-                        .attr("stroke", "#fff")
+                        .attr("class", "title")
+                        .attr("stroke", "#ffdd73")
                         .attr("stroke-width", 4)
                         .attr("text-anchor", "middle")
                         .text(d.n)
                     labg.append("svg:text")
-                        .attr("class", "axistitle")
+                        .attr("class", "title")
                         .attr("text-anchor", "middle")
                         .text(d.n);
                 })
@@ -188,7 +190,7 @@ path.overlay:hover {
                 .attr("transform", "translate(0," + (height - margin + 5) + ")")
                 .call(xlabels);
             svg.append("svg:text")
-                .classed("axistitle", true)
+                .classed("title", true)
                 .attr("transform", "translate(" + width + "," +
                     (height - 10) + ")")
                 .attr("text-anchor", "end")
@@ -198,7 +200,7 @@ path.overlay:hover {
                 .attr("transform", "translate(" + (margin - 5) + ",0)")
                 .call(ylabels);
             svg.append("svg:text")
-                .classed("axistitle", true)
+                .classed("title", true)
                 .attr("transform", "translate(" + (margin + 5) + ",15)")
                 .attr("text-anchor", "start")
                 .text("debt [% GDP]");
