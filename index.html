@@ -90,8 +90,19 @@ path.overlay:hover {
                     s = "";
                 for(var i = 0; i < d.d.length; i++) {
                     if(d.d[i] != -1) {
-                        if(prev == -1) { s = s + "M"; }
-                        s = s + " " + x(years[i]) + " " + y(d.d[i]);
+                        if(years[i] >= d.e && prev != -1) {
+                            var xp = d3.scale.linear()
+                                    .range([years[i-1], years[i]]),
+                                yp = d3.scale.linear()
+                                    .range([d.d[i-1], d.d[i]]);
+                            for(var j = 0.1; j < 1; j = j + 0.2) {
+                                s = s + "M" + x(xp(j)) + " " + y(yp(j));
+                                s = s + " " + x(xp(j+0.1)) + " " + y(yp(j+0.1));
+                            }
+                        } else {
+                            if(prev == -1) { s = s + "M"; }
+                            s = s + " " + x(years[i]) + " " + y(d.d[i]);
+                        }
                     }
                     prev = d.d[i];
                 }
