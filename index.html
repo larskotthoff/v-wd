@@ -46,7 +46,7 @@ path.overlay:hover {
     <body>
         <div style="position: fixed; top: 10px; left: 10px">
             <h1>World debt</h1>
-            Move mouse over graph to show details. Click to change scale, double
+            Move mouse over graph to show details. Scroll to change scale,
             click to reset. Dashed lines show estimates.
         </div>
         <div id="graph" style="position: fixed; top: 15%;"></div>
@@ -63,6 +63,7 @@ path.overlay:hover {
             years = [1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011],
             width = window.innerWidth - 30,
             height = window.innerHeight*0.8,
+            offsety = 0,
             svg = d3.select("#graph")
                 .append("svg:svg")
                 .attr("height", height)
@@ -114,14 +115,16 @@ path.overlay:hover {
                 return s;
             }
 
-            svg.on("click", function() {
-                    var offsety = d3.event.y-window.innerHeight*0.15;
-                    if(offsety >= 10 && offsety <= height - margin) {
+            svg.on("mousewheel", function() {
+                    var tmpoffsety = offsety + d3.event.wheelDeltaY;
+                    if(tmpoffsety >= 10 && tmpoffsety <= height - margin) {
+                        offsety = tmpoffsety;
                         y.interpolate(fishEye(offsety));
                         redraw();
                     }
                 })
-                .on("dblclick", function() {
+                .on("click", function() {
+                    offsety = 0;
                     y.interpolate(d3.interpolate);
                     redraw();
                 });
